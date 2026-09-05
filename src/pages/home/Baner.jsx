@@ -6,15 +6,30 @@ import banerimg3 from "../../assets/banner/banner3.png";
 
 function Baner() {
   return (
-    <Carousel autoPlay infiniteLoop showThumbs={false} showStatus={false}>
+    <Carousel
+      autoPlay
+      infiniteLoop
+      showThumbs={false}
+      showStatus={false}
+      className="bg-white rounded-4xl overflow-hidden"
+    >
       <div>
-        <img src={banerimg1} />
+        <img
+          src={banerimg1}
+          className="rounded-4xl  h-auto block object-cover"
+        />
       </div>
       <div>
-        <img src={banerimg2} />
+        <img
+          src={banerimg2}
+          className="rounded-4xl h-auto block object-cover"
+        />
       </div>
       <div>
-        <img src={banerimg3} />
+        <img
+          src={banerimg3}
+          className="rounded-4xl h-auto block object-cover"
+        />
       </div>
     </Carousel>
   );

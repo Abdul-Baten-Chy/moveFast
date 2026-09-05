@@ -2,13 +2,13 @@ import Logo from "../../componenets/Logo";
 
 function Footer() {
   return (
-    <footer className="footer footer-horizontal footer-center bg-tertiary text-black p-10">
+    <footer className="footer footer-horizontal footer-center bg-black mt-20 rounded-3xl text-white p-10">
       <aside>
         <Logo />
-        <p className="font-bold">
-          ACME Industries Ltd.
-          <br />
-          Providing reliable tech since 1992
+        <p className="font-medium text-sm sm:text-base leading-relaxed max-w-3xl mx-auto lg:mx-0">
+          Enjoy fast, reliable parcel delivery with real-time tracking and zero
+          hassle. From personal packages to business shipments — we deliver on
+          time, every time.
         </p>
         <p>Copyright © {new Date().getFullYear()} - All right reserved</p>
       </aside>
