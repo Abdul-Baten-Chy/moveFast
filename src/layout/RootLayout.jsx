@@ -4,7 +4,7 @@ import Navbar from "../shared/navbar/Navbar";
 
 function RootLayout() {
   return (
-    <div className="max-w-7xl mx-auto bg-[#EAECED] px-20 py-4">
+    <div className="max-w-7xl mx-auto bg-[#EAECED] px-20 py-2">
       <Navbar />
       <Outlet />
       <Footer />

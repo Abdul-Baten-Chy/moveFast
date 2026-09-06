@@ -11,12 +11,12 @@ function Navbar() {
         <NavLink to="/about">About</NavLink>
       </li>
       <li>
-        <NavLink to="/contact">Contact</NavLink>
+        <NavLink to="/coverage">Coverage</NavLink>
       </li>
     </>
   );
   return (
-    <div className="navbar bg-white my-9 p-4 rounded-3xl ">
+    <div className="navbar bg-white my-4 py-2 px-4 rounded-3xl ">
       <div className="navbar-start">
         <div className="dropdown">
           <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
