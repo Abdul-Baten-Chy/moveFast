@@ -1,9 +1,19 @@
-import { NavLink } from "react-router";
+import { useContext } from "react";
+import { Link, NavLink } from "react-router";
 import Logo from "../../componenets/Logo";
+import { AuthContext } from "../../context/auth/AuthContext";
 
 function Navbar() {
+  const { user, logOut, loading } = useContext(AuthContext);
+  if (loading) {
+    return <p>Loading... ,</p>;
+  }
+
   const link = (
     <>
+      <li>
+        <NavLink to="/">Home</NavLink>
+      </li>
       <li>
         <NavLink to="/services">Services</NavLink>
       </li>
@@ -50,7 +60,16 @@ function Navbar() {
         <ul className="menu menu-horizontal px-1">{link}</ul>
       </div>
       <div className="navbar-end">
-        <a className="btn btn-primary">Button</a>
+        {user ? (
+          <button className="btn btn-primary" onClick={logOut}>
+            log Out
+          </button>
+        ) : (
+          <Link to="/login">
+            {" "}
+            <button className="btn btn-primary">Sign In</button>
+          </Link>
+        )}
       </div>
     </div>
   );
