@@ -2,6 +2,8 @@ import { createBrowserRouter } from "react-router";
 
 import { Suspense } from "react";
 import AuthLayout from "../layout/AuthLayout";
+
+import Private from "../layout/Private";
 import RootLayout from "../layout/RootLayout";
 import Login from "../pages/auth/login/Login";
 import SignUp from "../pages/auth/signup/SignUp";
@@ -20,9 +22,11 @@ export const router = createBrowserRouter([
       {
         path: "/coverage",
         element: (
-          <Suspense fallback={<div>Loading...</div>}>
-            <Coverage centers={data} />,
-          </Suspense>
+          <Private>
+            <Suspense fallback={<div>Loading...</div>}>
+              <Coverage centers={data} />
+            </Suspense>
+          </Private>
         ),
       },
     ],

@@ -22,7 +22,8 @@ function AuthProvider({ children }) {
     seLoading(true);
     signOut(auth)
       .then(() => {
-        console.log("user sighn Out");
+        setUser(null);
+        seLoading(false);
       })
       .catch((error) => {
         console.log(error);
