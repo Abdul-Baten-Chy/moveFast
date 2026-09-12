@@ -1,11 +1,10 @@
-import { useForm } from "react-hook-form";
-
-function SendParcel() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
+import { use } from "react";
+import { useForm, useWatch } from "react-hook-form";
+import Swal from "sweetalert2";
+import { getCost } from "../../utils/getCost";
+function SendParcel({ data }) {
+  const rigionsData = use(data);
+  const { register, control, handleSubmit, reset } = useForm({
     defaultValues: {
       parcelType: "document",
       senderRegion: "",
@@ -15,15 +14,56 @@ function SendParcel() {
     },
   });
 
-  const onFormSubmit = (data) => {
-    console.log("Form Data Submitted:", data);
+  const region = rigionsData.map((r) => r.region);
+  const onlyUniqueRegion = [...new Set(region)];
+
+  const onFormSubmit = async (data) => {
+    const cost = getCost(data);
+    Swal.fire({
+      title: "Are you sure?",
+      text: `Your cost is ${cost} `,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, i agree!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        fetch("http://localhost:3000/user", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        })
+          .then((res) => {
+            return res.json();
+          })
+          .then((newData) => {
+            console.log(newData);
+            Swal.fire({
+              title: "submitted",
+              text: "Your order has been submitted.",
+              icon: "success",
+            });
+          });
+      }
+    });
+  };
+
+  const senderRegion = useWatch({ control, name: "senderRegion" });
+  const receiverRegion = useWatch({ control, name: "receiverRegion" });
+  const getDistrict = (region) => {
+    const regionDistrict = rigionsData.filter((r) => r.region == region);
+    const district = regionDistrict.map((r) => r.district);
+    return district;
   };
 
   return (
     <div className="mx-auto max-w-5xl mt-10 p-6 bg-base-100 rounded-2xl shadow-xl text-base-content">
       <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-6">
         {/* Parcel Type Radio Group */}
-        <div className="flex items-center gap-6 p-4 bg-base-200 rounded-xl">
+        <div className="flex flex-col md:flex-row md:items-center gap-6 p-4 bg-base-200 rounded-xl">
           <span className="font-semibold text-sm">Parcel Type:</span>
           <label className="label cursor-pointer gap-2">
             <input
@@ -47,9 +87,9 @@ function SendParcel() {
         </div>
         {/* product info */}
         <div>
-          <fieldset className="border p-6 m-4 rounded-xl border-gray-300">
+          <fieldset className="border  p-6 m-4 rounded-xl border-gray-300">
             <legend className="px-2">Product info</legend>
-            <div className="flex gap-5">
+            <div className="flex flex-col md:flex-row gap-5">
               <div>
                 <label className="label text-sm font-medium">
                   Product Name
@@ -112,9 +152,11 @@ function SendParcel() {
                 <option value="" disabled>
                   Pick a Region
                 </option>
-                <option value="Crimson">Crimson</option>
-                <option value="Amber">Amber</option>
-                <option value="Velvet">Velvet</option>
+                {onlyUniqueRegion.map((region, i) => (
+                  <option value={region} key={i}>
+                    {region}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -127,9 +169,11 @@ function SendParcel() {
                 <option value="" disabled>
                   Pick a District
                 </option>
-                <option value="Crimson">Crimson</option>
-                <option value="Amber">Amber</option>
-                <option value="Velvet">Velvet</option>
+                {getDistrict(senderRegion).map((district, i) => (
+                  <option value={district} key={i}>
+                    {district}
+                  </option>
+                ))}
               </select>
             </div>
           </fieldset>
@@ -169,9 +213,11 @@ function SendParcel() {
                 <option value="" disabled>
                   Pick a Region
                 </option>
-                <option value="Crimson">Crimson</option>
-                <option value="Amber">Amber</option>
-                <option value="Velvet">Velvet</option>
+                {onlyUniqueRegion.map((region, i) => (
+                  <option value={region} key={i}>
+                    {region}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -184,9 +230,11 @@ function SendParcel() {
                 <option value="" disabled>
                   Pick a District
                 </option>
-                <option value="Crimson">Crimson</option>
-                <option value="Amber">Amber</option>
-                <option value="Velvet">Velvet</option>
+                {getDistrict(receiverRegion).map((district, i) => (
+                  <option value={district} key={i}>
+                    {district}
+                  </option>
+                ))}
               </select>
             </div>
           </fieldset>
@@ -194,7 +242,7 @@ function SendParcel() {
         {/* submit button  */}
         <button
           type="submit"
-          className="btn btn-primary w-1/3 text-lg block mx-auto"
+          className="btn btn-primary w-full md:w-1/3 text-lg block mx-auto"
         >
           Submit Parcel Request
         </button>

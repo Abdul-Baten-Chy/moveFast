@@ -24,7 +24,7 @@ export const router = createBrowserRouter([
         path: "/send-percel",
         element: (
           <Private>
-            <SendPercel />
+            <SendPercel data={data} />
           </Private>
         ),
       },
