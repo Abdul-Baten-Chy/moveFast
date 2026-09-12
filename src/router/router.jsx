@@ -9,6 +9,7 @@ import Login from "../pages/auth/login/Login";
 import SignUp from "../pages/auth/signup/SignUp";
 import Coverage from "../pages/coverage/Coverage";
 import Home from "../pages/home/Home";
+import SendPercel from "../pages/percels/SendPercel";
 const data = fetch("/serviceCenter.json").then((res) => res.json());
 export const router = createBrowserRouter([
   {
@@ -18,6 +19,14 @@ export const router = createBrowserRouter([
       {
         path: "/",
         element: <Home />,
+      },
+      {
+        path: "/send-percel",
+        element: (
+          <Private>
+            <SendPercel />
+          </Private>
+        ),
       },
       {
         path: "/coverage",

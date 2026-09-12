@@ -14,7 +14,6 @@ function Login() {
   const navigate = useNavigate();
   const from = location.state?.from?.pathname || "/";
   const onSubmit = (data) => {
-    console.log(data);
     const email = data.email;
     const password = data.password;
     signIn(email, password)

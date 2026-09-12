@@ -23,6 +23,9 @@ function Navbar() {
       <li>
         <NavLink to="/coverage">Coverage</NavLink>
       </li>
+      <li>
+        <NavLink to="/send-percel">Send Percel</NavLink>
+      </li>
     </>
   );
   return (
