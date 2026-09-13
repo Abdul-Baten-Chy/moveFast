@@ -1,10 +1,15 @@
-import { use } from "react";
+import { use, useContext, useEffect, useMemo } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import Swal from "sweetalert2";
+import { AuthContext } from "../../context/auth/AuthContext";
+import useExiosSecure from "../../hooks/useExiosSecure";
 import { getCost } from "../../utils/getCost";
+
 function SendParcel({ data }) {
+  const secureAxios = useExiosSecure();
+  const { user } = useContext(AuthContext);
   const rigionsData = use(data);
-  const { register, control, handleSubmit, reset } = useForm({
+  const { register, control, handleSubmit, reset, setValue } = useForm({
     defaultValues: {
       parcelType: "document",
       senderRegion: "",
@@ -13,50 +18,59 @@ function SendParcel({ data }) {
       receiverDistrict: "",
     },
   });
+  const senderRegion = useWatch({ control, name: "senderRegion" });
+  const receiverRegion = useWatch({ control, name: "receiverRegion" });
 
-  const region = rigionsData.map((r) => r.region);
-  const onlyUniqueRegion = [...new Set(region)];
+  const onlyUniqueRegion = useMemo(() => {
+    if (!rigionsData) return [];
+    const region = rigionsData.map((r) => r.region);
+    return [...new Set(region)];
+  }, [rigionsData]);
+
+  const getRecieverDistrict = useMemo(() => {
+    if (!rigionsData || !receiverRegion) return [];
+    return rigionsData
+      ?.filter((r) => r.region == receiverRegion)
+      .map((r) => r.district);
+  }, [receiverRegion, rigionsData]);
+  const getSenderDistrict = useMemo(() => {
+    if (!rigionsData || !senderRegion) return [];
+    return rigionsData
+      ?.filter((r) => r.region == senderRegion)
+      .map((r) => r.district);
+  }, [senderRegion, rigionsData]);
+
+  useEffect(() => {
+    setValue("receiverDistrict", "");
+  }, [receiverRegion, setValue]);
+  useEffect(() => {
+    setValue("senderDistrict", "");
+  }, [senderRegion, setValue]);
 
   const onFormSubmit = async (data) => {
     const cost = getCost(data);
-    Swal.fire({
+    const result = await Swal.fire({
       title: "Are you sure?",
       text: `Your cost is ${cost} `,
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, i agree!",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        fetch("http://localhost:3000/user", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
-        })
-          .then((res) => {
-            return res.json();
-          })
-          .then((newData) => {
-            console.log(newData);
-            Swal.fire({
-              title: "submitted",
-              text: "Your order has been submitted.",
-              icon: "success",
-            });
-          });
-      }
+      confirmButtonText: "Yes, I agree!",
     });
-  };
-
-  const senderRegion = useWatch({ control, name: "senderRegion" });
-  const receiverRegion = useWatch({ control, name: "receiverRegion" });
-  const getDistrict = (region) => {
-    const regionDistrict = rigionsData.filter((r) => r.region == region);
-    const district = regionDistrict.map((r) => r.district);
-    return district;
+    if (result.isConfirmed) {
+      const res = await secureAxios.post("/parcel", { ...data, cost });
+      console.log(res);
+      if (res.statusText == "OK") {
+        console.log(res.data);
+        Swal.fire({
+          title: "submitted",
+          text: "Your order has been submitted.",
+          icon: "success",
+        });
+        reset();
+      }
+    }
   };
 
   return (
@@ -137,6 +151,7 @@ function SendParcel({ data }) {
               <label className="label text-sm font-medium">Email</label>
               <input
                 type="email"
+                value={user?.email}
                 className="input input-bordered w-full"
                 placeholder="sender@example.com"
                 {...register("senderEmail")}
@@ -152,8 +167,8 @@ function SendParcel({ data }) {
                 <option value="" disabled>
                   Pick a Region
                 </option>
-                {onlyUniqueRegion.map((region, i) => (
-                  <option value={region} key={i}>
+                {onlyUniqueRegion.map((region) => (
+                  <option value={region} key={region}>
                     {region}
                   </option>
                 ))}
@@ -169,8 +184,8 @@ function SendParcel({ data }) {
                 <option value="" disabled>
                   Pick a District
                 </option>
-                {getDistrict(senderRegion).map((district, i) => (
-                  <option value={district} key={i}>
+                {getSenderDistrict.map((district) => (
+                  <option value={district} key={district}>
                     {district}
                   </option>
                 ))}
@@ -213,8 +228,8 @@ function SendParcel({ data }) {
                 <option value="" disabled>
                   Pick a Region
                 </option>
-                {onlyUniqueRegion.map((region, i) => (
-                  <option value={region} key={i}>
+                {onlyUniqueRegion.map((region) => (
+                  <option value={region} key={region}>
                     {region}
                   </option>
                 ))}
@@ -230,8 +245,8 @@ function SendParcel({ data }) {
                 <option value="" disabled>
                   Pick a District
                 </option>
-                {getDistrict(receiverRegion).map((district, i) => (
-                  <option value={district} key={i}>
+                {getRecieverDistrict.map((district) => (
+                  <option value={district} key={district}>
                     {district}
                   </option>
                 ))}

@@ -3,11 +3,13 @@ import { createBrowserRouter } from "react-router";
 import { Suspense } from "react";
 import AuthLayout from "../layout/AuthLayout";
 
+import DashboardLayout from "../layout/DashboardLayout";
 import Private from "../layout/Private";
 import RootLayout from "../layout/RootLayout";
 import Login from "../pages/auth/login/Login";
 import SignUp from "../pages/auth/signup/SignUp";
 import Coverage from "../pages/coverage/Coverage";
+import DashBoard from "../pages/dashboard/DashBoard";
 import Home from "../pages/home/Home";
 import SendPercel from "../pages/percels/SendPercel";
 const data = fetch("/serviceCenter.json").then((res) => res.json());
@@ -50,6 +52,20 @@ export const router = createBrowserRouter([
       {
         path: "/signup",
         element: <SignUp />,
+      },
+    ],
+  },
+  {
+    path: "/",
+    element: (
+      <Private>
+        <DashboardLayout />
+      </Private>
+    ),
+    children: [
+      {
+        path: "/dashboard",
+        element: <DashBoard />,
       },
     ],
   },
