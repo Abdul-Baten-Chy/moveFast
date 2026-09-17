@@ -11,15 +11,15 @@ function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, seLoading] = useState(true);
   const signUp = (email, password) => {
-    seLoading(true);
+    
     return createUserWithEmailAndPassword(auth, email, password);
   };
   const signIn = (email, password) => {
-    seLoading(true);
+    
     return signInWithEmailAndPassword(auth, email, password);
   };
   const logOut = () => {
-    seLoading(true);
+    
     signOut(auth)
       .then(() => {
         setUser(null);
@@ -33,10 +33,12 @@ function AuthProvider({ children }) {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
+        seLoading(false);
       } else {
         setUser(null);
+        seLoading(false);
       }
-      seLoading(false);
+     
     });
 
     return () => unsubscribe();
