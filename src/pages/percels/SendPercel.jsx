@@ -59,7 +59,7 @@ function SendParcel({ data }) {
       confirmButtonText: "Yes, I agree!",
     });
     if (result.isConfirmed) {
-      const res = await secureAxios.post("/parcel", { ...data, cost });
+      const res = await secureAxios.post("/parcels", { ...data, cost });
       console.log(res);
       if (res.statusText == "OK") {
         console.log(res.data);

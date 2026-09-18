@@ -6,7 +6,7 @@ function useGetParcels(email) {
   const query = useQuery({
     queryKey: ["parcels", email],
     queryFn: async () => {
-      const parcels = await secureAxios.get("/parcel", {
+      const parcels = await secureAxios.get("/parcels", {
         params: { email: email },
       });
 
