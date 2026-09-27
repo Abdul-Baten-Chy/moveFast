@@ -4,6 +4,7 @@ import useGetParcels from "../../hooks/useGetParcels";
 import Loading from "../loading/Loading";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import useExiosSecure from "../../hooks/useExiosSecure";
+import Swal from "sweetalert2";
 
 function DashBoard() {
   const { user, Loading: authLoading } = useContext(AuthContext);
@@ -19,6 +20,11 @@ function DashBoard() {
     mutationFn:async (id)=>{
      const res= await secureAxios.delete(`/parcel/${id}`)
      if(res.data.deletedCount===1){
+      Swal.fire({
+    title: "Deleted!",
+    text: "Your file has been deleted.",
+    icon: "success"
+  })
       queryClent.invalidateQueries({queryKey:["parcels", user.email]})
      }
      console.log(res);
@@ -30,8 +36,21 @@ function DashBoard() {
   if (isError || mutationError) return <p>{error?.message || mutationError.message || "something went wrong"}</p>;
 
   const handleDelete =(id)=>{
-console.log(id);
-mutate(id)
+Swal.fire({
+  title: "Are you sure?",
+  text: "You won't be able to revert this!",
+  icon: "warning",
+  showCancelButton: true,
+  confirmButtonColor: "#3085d6",
+  cancelButtonColor: "#d33",
+  confirmButtonText: "Yes, delete it!"
+}).then((result) => {
+  if (result.isConfirmed) {
+    mutate(id)
+    
+    };
+});
+
 
   }
 
