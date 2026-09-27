@@ -1,9 +1,14 @@
 import { useContext } from "react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import { AuthContext } from "../../../context/auth/AuthContext";
+import Swal from "sweetalert2";
 
 function SignUp() {
+  const navigation= useNavigate()
+  const location = useLocation();
+ 
+  const from = location.state?.from?.pathname || "/";
   const { signUp } = useContext(AuthContext);
   const {
     register,
@@ -12,15 +17,21 @@ function SignUp() {
   } = useForm();
 
   const onSubmit = (data) => {
-    console.log(data);
+    
     const email = data.email;
     const password = data.password;
     signUp(email, password)
       .then((res) => {
-        console.log(res.user);
+        console.log(res);
+        
+       if(res.user.accessToken){
+        Swal.fire("Sign Up Successfully!");
+        navigation(from, {replace:true})
+       }
       })
       .catch((err) => {
         console.log(err);
+        Swal.fire(err.message);
       });
   };
   return (
